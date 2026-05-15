@@ -21,6 +21,10 @@
 # RStudio files
 .Rproj.user/
 
+
+*.html
+*.pdf
+
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf
@@ -47,3 +51,8 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+
+# Might not need right now
+/data/raw/
+/renv/library/
