@@ -15,6 +15,8 @@ knitr::opts_chunk$set(
 
 Name: Malk Daboor
 B00: B00953701
+GitHub link: https://github.com/serendipity77705/csci4148-labs
+GitHub link to the Rmd: https://github.com/serendipity77705/csci4148-labs/blob/main/lab0_reproducibile_research_rstudio_rmd_git.rmd
 
 # Objectives
 
