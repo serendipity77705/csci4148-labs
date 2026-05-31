@@ -1,0 +1,7 @@
+"0","pca_scores |>"
+"0","  ggplot(aes(PC01, PC02, colour = SepsisLabel)) +"
+"0","  geom_point(alpha = 0.75, size = 0.7) +"
+"0","  scale_colour_manual(values = c(""No Sepsis"" = ""grey60"","
+"0","                                 ""Sepsis""    = ""firebrick"")) +"
+"0","  labs(title = ""PCA: PC1 vs PC2"", colour = NULL) +"
+"0","  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 2)))"

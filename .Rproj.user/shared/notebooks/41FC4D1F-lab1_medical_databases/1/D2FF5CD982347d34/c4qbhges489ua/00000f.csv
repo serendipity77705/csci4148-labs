@@ -1,0 +1,6 @@
+"0","data_dir  <- here(""data"")"
+"0","cache_dir <- fs::path(data_dir, ""cache"")"
+"0","fs::dir_create(cache_dir)"
+"0",""
+"0","data_url <- ""http://maguire-lab.github.io/health_data_science_research_2026/static_files/practicals/lab1_data/physionet_subsample_modified_1.0.0.rds"""
+"0","rds_path <- fs::path(cache_dir, ""physionet_subsample_1.0.0.rds"")"
