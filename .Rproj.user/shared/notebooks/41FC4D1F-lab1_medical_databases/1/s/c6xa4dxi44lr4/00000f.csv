@@ -1,5 +1,0 @@
-"0","wf_set <- workflow_set("
-"0","  preproc = list(glm = glm_recipe, rf = base_recipe, xgb = base_recipe),"
-"0","  models  = list(glm = glm_spec,   rf = rf_spec,      xgb = xgb_spec),"
-"0","  cross   = FALSE"
-"0",")"

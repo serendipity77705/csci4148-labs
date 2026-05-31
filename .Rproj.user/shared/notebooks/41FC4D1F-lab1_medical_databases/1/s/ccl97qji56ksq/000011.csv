@@ -1,6 +1,0 @@
-"0","tidy(pca_prep, id = ""pca"", type = ""variance"") |>"
-"0","  filter(terms == ""percent variance"") |>"
-"0","  ggplot(aes(component, value)) +"
-"0","  geom_col(fill = ""steelblue"") +"
-"0","  labs(x = ""Principal component"", y = ""% variance explained"","
-"0","       title = ""PCA scree plot"")"

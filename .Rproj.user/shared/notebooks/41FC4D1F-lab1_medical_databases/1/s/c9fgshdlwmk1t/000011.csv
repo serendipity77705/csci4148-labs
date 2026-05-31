@@ -1,6 +1,0 @@
-"0","preds <- collect_predictions(final_fit)"
-"0",""
-"0","preds |>"
-"0","  pr_curve(truth = SepsisLabel, .pred_Sepsis,"
-"0","           event_level = ""first"") |>"
-"0","  autoplot() + labs(title = ""Precision–Recall curve (test set)"")"

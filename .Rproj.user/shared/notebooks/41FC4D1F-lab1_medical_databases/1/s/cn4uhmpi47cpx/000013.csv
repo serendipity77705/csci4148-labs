@@ -1,3 +1,0 @@
-"0","rank_results(tuned, rank_metric = ""pr_auc"", select_best = TRUE) |>"
-"0","  filter(.metric %in% c(""pr_auc"", ""brier_class"", ""accuracy"", ""sensitivity"", ""specificity"")) |>"
-"0","  select(wflow_id, .metric, mean, std_err, rank)"

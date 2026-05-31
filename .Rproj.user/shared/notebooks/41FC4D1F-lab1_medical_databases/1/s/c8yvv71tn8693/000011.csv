@@ -1,5 +1,0 @@
-"0","preds |>"
-"0","  conf_mat(truth = SepsisLabel, estimate = .pred_class) |>"
-"0","  autoplot(type = ""heatmap"") +"
-"0","  scale_fill_gradient(low = ""white"", high = ""firebrick"") +"
-"0","  labs(title = ""Confusion matrix (threshold = 0.5)"")"
