@@ -23,6 +23,12 @@ options(
 
 > **Submission.** Knit your Rmd file into HTML and submit it via Brightspace. Include a link to your git repository (GitHub or git.cs.dal.ca) as a comment on your submission.
 
+
+Name: Malk Daboor
+email: malk.daboor@dal.ca
+B00: B00953701
+GitHub link: https://github.com/serendipity77705/csci4148-labs.git
+GitHub Rmd link: jj
 ---
 
 ## 0 Setup
@@ -52,10 +58,60 @@ Each record (row) has 8 vital signs, 26 laboratory measurements, 6 demographic f
 We simplify the temporal problem to a static one by taking one random hourly record per patient, giving a standard tabular classification task with realistic clinical challenges: class imbalance, high missingness, and mixed data types.
 
 **Q1. (2 marks)** Look up the [PhysioNet variable descriptions](https://physionet.org/content/challenge-2019/1.0.0/) and include an explanation of the dataset into this notebook (one row per variable: name, description, units).  
+the dataset includes vital signs like heart rate, temperature, respiration rate, etc.; labratory values like lactic acid amount; demographics like age and gender; and the final outcome.
+
+HR	Heart rate (beats per minute)
+O2Sat	Pulse oximetry (%)
+Temp	Temperature (Deg C)
+SBP	Systolic BP (mm Hg)
+MAP	Mean arterial pressure (mm Hg)
+DBP	Diastolic BP (mm Hg)
+Resp	Respiration rate (breaths per minute)
+EtCO2	End tidal carbon dioxide (mm Hg)
+
+BaseExcess	Measure of excess bicarbonate (mmol/L)
+HCO3	Bicarbonate (mmol/L)
+FiO2	Fraction of inspired oxygen (%)
+pH	N/A
+PaCO2	Partial pressure of carbon dioxide from arterial blood (mm Hg)
+SaO2	Oxygen saturation from arterial blood (%)
+AST	Aspartate transaminase (IU/L)
+BUN	Blood urea nitrogen (mg/dL)
+Alkalinephos	Alkaline phosphatase (IU/L)
+Calcium	(mg/dL)
+Chloride	(mmol/L)
+Creatinine	(mg/dL)
+Bilirubin_direct	Bilirubin direct (mg/dL)
+Glucose	Serum glucose (mg/dL)
+Lactate	Lactic acid (mg/dL)
+Magnesium	(mmol/dL)
+Phosphate	(mg/dL)
+Potassium	(mmol/L)
+Bilirubin_total	Total bilirubin (mg/dL)
+TroponinI	Troponin I (ng/mL)
+Hct	Hematocrit (%)
+Hgb	Hemoglobin (g/dL)
+PTT	partial thromboplastin time (seconds)
+WBC	Leukocyte count (count*10^3/µL)
+Fibrinogen	(mg/dL)
+Platelets	(count*10^3/µL)
+
+Age	Years (100 for patients 90 or above)
+Gender	Female (0) or Male (1)
+Unit1	Administrative identifier for ICU unit (MICU)
+Unit2	Administrative identifier for ICU unit (SICU)
+HospAdmTime	Hours between hospital admit and ICU admit
+ICULOS	ICU length-of-stay (hours since ICU admit)
+
+SepsisLabel	For sepsis patients, SepsisLabel is 1 if t≥tsepsis−6 and 0 if t<tsepsis−6. For non-sepsis patients, SepsisLabel is 0.
 
 **Q2. (2 marks)** Then choose **three variables** you hypothesise might be strong predictors of sepsis and write one sentence each explaining your reasoning.  There is no right or wrong answer to this, but you should think about your and problem before diving into the EDA and prediction!
 *(Hint: look up how sepsis is clinically diagnosed.)*  
 
+The three varuables I will be using are lactate level, heart rate and blood urea levels.
+- lactate: lactic acid is secreted when your body isn't receiving enough oxygen due to heart failure, which sepsis can cause, or severe infection, which is a sign of possible sepsis. High lactic acid values may indicate sepsis.
+- heart rate: is a visible sign that something is worng. Often the heart beats irregularly fast when the body has sepsis
+- respiration rate: sign that something is wrong if patient has shallow breaths and body is trying to get oxygen into it.
 ---
 
 ## 2 Data Loading and Splitting
@@ -95,7 +151,7 @@ sepsis <- sepsis |>
                               labels = c("Sepsis", "No Sepsis")))
 
 # splitting
-split <- initial_split(sepsis, prop = 0.75, strata = SepsisLabel)
+split <- initial_split(sepsis, prop = 0.75, strata = SepsisLabel) # 75% of data is training, 25% is testing
 train <- training(split)
 test  <- testing(split)
 
@@ -104,7 +160,7 @@ cat("Test rows:    ", nrow(test),  "\n")
 ```
 
 **Q3. (1 mark)** What percentage of our dataset is being assigned to test?
-
+25% of data is assigned to test, while 75% is training
 --- 
 
 ## 3 Exploratory Data Analysis
@@ -114,32 +170,45 @@ Again, do your EDA on `train` only - we do not look at `test` until Section 6.
 ### 3.1 Class balance
 
 
-**Q4. (2 marks).** Uncomment and csomplete the code below to check the class balance in the **training** set.
+**Q4. (2 marks).** Uncomment and complete the code below to check the class balance in the **training** set.
 `count()` tallies rows per group; add a `prop` column to show each class as a fraction of the total.
 
 ```{r q4-class-balance}
-#train |>
-#  count(___) |>
-#  mutate(prop = ___ / sum(___))
+train |>
+  count(SepsisLabel) |>
+  mutate(prop = n / sum(n))
 ```
 
 
 **Q5. (2 mark)** Using your solution to Q4, complete this plotting code to create a barplot of the relative sepsis label balance.  Change the colour of the sepsis bar to green.
 
 ```{r class-balance-plot, fig.height = 2.8}
-#code from your answer to Q3,
-#     |>
-#  ggplot(aes(SepsisLabel, prop, fill = SepsisLabel)) +
-#  geom_col() +
-#  geom_text(aes(label = scales::percent(prop, accuracy = 0.01)), vjust = -0.4) +
-#  scale_y_continuous(labels = scales::percent) +
-#  scale_fill_manual(values = c("No Sepsis" = "grey60", 
-#                               "Sepsis"    = "firebrick")) +
-#  labs(x = NULL, y = "Percentage of Trainining Data", title = "Sepsis Class Balance") +
-#  theme(legend.position = "none")
+#code from your answer to Q4,
+train |>
+  count(SepsisLabel) |>
+  mutate(prop = n / sum(n)) |>
+
+  ggplot(aes(SepsisLabel, prop, fill = SepsisLabel)) +
+  geom_col() +
+  geom_text(aes(label = scales::percent(prop, accuracy = 0.01)), vjust = -0.4) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = c("No Sepsis" = "grey60", 
+                               "Sepsis"    = "green")) +
+  labs(x = NULL, y = "Percentage of Trainining Data", title = "Sepsis Class Balance") +
+  theme(legend.position = "none")
 ```
 
 **Q6. (3 marks)**  Given the class imbalance, which of the following 2 metrics might be the most misleading and why? accuracy, precision, recall, F1-score, ROC-AUC, PR-AUC?
+The 2 metrics that would be misleading are accuracy, and ROC-AUC.
+
+Just for my knowledge: 
+-- accuracy: tells us number of correct predictions over number of total predictions. With imbalanced datasets, we might have high accuracy because class A is being predicted correctly all the time while class B is being predicted correctly none of the time. However, the inbalance for A will still lead to high accuracy
+-- precision: measures how many of the positive predictions are correct. Good for when we don't want false positives ie medicine. 
+-- recall: opposite of precision, where we care about false negatives more than false positives. 
+-- F1-score: used when we want balance between precision and recall
+-- ROC-AUC: binary classification model, is for sensitivity (true positives) vs. specificity (false positives). it is good for balanced datasets 
+-- PR-AUC: binary classification model, is for precision (positive predictions) vs. recall (true positives). Is good for unbalanced datasets
+
 
 ### 3.2 Missingness
 
@@ -160,9 +229,27 @@ train |>
 Modify the above to plot only missingness for Sepsis positive data
 ```{r missingness-sepsis-bar, fig.height = 5}
 # add your code
+train |>
+  filter(SepsisLabel == "Sepsis") |>
+  summarise(across(everything(), ~ mean(is.na(.x)))) |>
+  pivot_longer(everything(),
+               names_to = "variable", values_to = "pct_missing") |>
+  filter(pct_missing > 0) |>
+  ggplot(aes(pct_missing, fct_reorder(variable, pct_missing))) +
+  geom_col(fill = "steelblue") +
+  scale_x_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Missing data by variable (training set) for Sepsis positive data",
+       x = "Percent missing", y = NULL)
+
 ```
 
 **Q8. (3 marks)** Which three variables have the highest missingness? In an ICU context, why might a lab value be missing - is this likely to be random, or informative? Does this mean you should drop or impute these values?
+The 3 variables are:
+- troponinI: Troponin I (ng/mL) -- protein that is found in heart muscles and helps with heart contractions
+- fibrinogen: (mg/dL) -- protein that circulates in the body and clots blood around injuries to stop bleeding
+- bilirubin_direct: Total bilirubin (mg/dL) -- pigment that is created when old red blood cells are broken down
+
+the reason these might have a high missingness is because there might be faster and easier variables to collect, and this would be quite important in severe cases where there might not be enough time to consistently test for these values. They also might not be as impactful as other variables such as heart and respiration rate. We have no/almost no data on these three variables so it would not be very useful to have them; it would be better to drop them and focus on morei mpactful variables.
 
 
 ### 3.3 Vital-sign distributions by outcome
@@ -186,6 +273,19 @@ train |>
 **Q9 (2 marks).** Modify the code above to plot the distribution of **three other lab variables** of your choice. 
 
 ```{r q9-lab-density}
+vitals <- c("HR", "O2Sat", "Temp", "SBP", "MAP", "DBP", "Resp", "pH", "Glucose", "BaseExcess") # added pH, glucose and excess bicarbonate
+
+train |>
+  select(all_of(vitals), SepsisLabel) |>
+  pivot_longer(-SepsisLabel) |>
+  filter(!is.na(value)) |>
+  ggplot(aes(value, fill = SepsisLabel)) +
+  geom_density(alpha = 0.55, colour = NA) +
+  facet_wrap(~ name, scales = "free", ncol = 4) +
+  scale_fill_manual(values = c("No Sepsis" = "grey60",
+                               "Sepsis"    = "firebrick")) +
+  labs(x = NULL, y = "Density", fill = NULL,
+       title = "Vital-sign distributions by sepsis status")
 ```
 
 Correlation plot of all variables by similarity of their correlation in Sepsis and Non-Sepsis
@@ -280,7 +380,7 @@ tidy(pca_prep, id = "pca", type = "variance") |>
 The two classes overlap heavily in the PC1/PC2 projection — this is common in clinical data where no single linear combination cleanly separates cases.
 
 **Q10 (2 marks).** What does this tell us about the potential decision boundary our predictive model would have to fit?  Which models easily support this type of boundary?
-
+Our model will have. to be very specific because of the large number of overlaps. We will not be able to use something as simple as a linear regression, rather we will have to consider other decision boundaries such as random forests, neural networks and support vector machines.  
 ---
 
 ## 4 Feature Engineering
@@ -297,7 +397,8 @@ add_features <- function(df) {
       bun_creat_ratio = BUN / Creatinine,  # > 20 suggests pre-renal AKI
       age_group = cut(Age,
                       breaks = c(-1, 40, 65, 80, 120),
-                      labels = c("<=40", "41-65", "66-80", "80+"))
+                      labels = c("<=40", "41-65", "66-80", "80+")),
+      shock_index = HR/SBP
     )
 }
 train <- add_features(train)
@@ -350,15 +451,24 @@ Each of these has several hyperparameters (parts of the model we don't directly 
 **Q12 4 marks**: Using R's documentation (e.g., `?logistic_reg`) look up and briefly explain each of the hyperparamters we are tuning in cross-validation for each of the 3 models:s
 
 ```{r model-spec}
+# hyperparameters: penalty scaling factor and proportion L1 vs L2s
+#penalty: total amount of regularization in model; refers to weights and penalties applied to a model's complexity to stop from overfitting.
+#mixture: mixture amounts of different types of regularization
 glm_spec <- logistic_reg(penalty = tune(), mixture = tune()) |>
   set_engine("glmnet") |>
   set_mode("classification")
 
-# hyperparameters: penalty scaling factor and proportion L1 vs L2s
+# trees is set, not hyperparameter
+# min_n: number of data points in node before it splits into other nodes
 rf_spec <- rand_forest(trees = 500, min_n = tune()) |>
   set_engine("ranger", importance = "permutation", num.threads = 1) |>
   set_mode("classification")
 
+#tree_depth: maximum depth of tree --> maximum number of splits
+#learn_rate: iteration-to-iteration algorithm adaption rate
+#loss_reduction: reduction in loss function required to split further
+#sample_size: amount of data used when fitting
+# min_n: number of data points in node before it splits into other nodes
 xgb_spec <- boost_tree(
   trees = 500, tree_depth = tune(), learn_rate = tune(),
   loss_reduction = tune(), sample_size = tune(),
@@ -418,6 +528,8 @@ autoplot(tuned, metric = "pr_auc", select_best = TRUE) +
 **Q13 (2 marks).** Which model family achieves the highest CV PR-AUC?
 Is the gap between the best and worst model large relative to the standard errors?
 What does that suggest about model selection here?
+the model with the highest CV PR-AUC is logistic regression. random forest and boost trees seem to be at around the same CV PR-AUC values. the gap itself is not too big, at a difference of about 0.1, but the standard error seems like it would widen the gap.
+It would be best to choose logistic regression as it performs the best out of all three models. it has the PR-AUC value and the smallest error bar, meaning that it is more consistent than the other two.
 
 ```{r}
 rank_results(tuned, rank_metric = "pr_auc", select_best = TRUE) |>
@@ -426,6 +538,7 @@ rank_results(tuned, rank_metric = "pr_auc", select_best = TRUE) |>
 ```
 
 **Q14 (3 marks).** By summarising and comparing the metrics output by this code, describe how each model performed relative to one another.
+All three models ae quite similar to each other in terms of accuracy, brier class, PR-AUC and specificity. However, the main thing that they differ in is sensitivity, with gim_glm being 0.43, xgb_xgb at 0.5 and rf_rf at 0.34. All of these models are good at correctly identifying positive cases, but aren't as good at correctly identifying negative cases. In this specific case, xgb_xgb is a bit better than the other models, but it only about as good as a coin flip, with the other models being even less accurate than a random guess. 
 
 ---
 
@@ -466,6 +579,7 @@ preds |>
 ### 6.3 Confusion matrix
 
 **Q15 (1 marks).** How many times were true sepsis cases classified as non-sepsis in the test set? Is this more or less than the correct sepsis predictions?
+18 patients were classified as non-sepsis when they had sepsis. The correct sepsis classifications are 11. This means that the sepsis cases classified as non-sepsis are more than correctly classified sepsis cases. The model misses more sepsis cases than it identifies. 
 
 ```{r conf-matrix}
 preds |>
@@ -488,11 +602,11 @@ errors <- augment(final_fit)
 
 subgroup_auc <- function(df, group_var) {
   df |>
-    group_by() |>
+    group_by({{ group_var }}) |>
     filter(n_distinct(SepsisLabel) == 2) |>
     roc_auc(truth = SepsisLabel, .pred_Sepsis,
             event_level = "second") |>
-    select(, .estimate)
+    select({{ group_var }}, .estimate)
 }
 
 overall_auc <- collect_metrics(final_fit) |>
@@ -518,10 +632,11 @@ bind_rows(
 
 **Q15 (2 marks).** Is there a subgroup where the model performs noticeably worse than the overall PR-AUC?
 Suggest one data-driven reason and one clinical reason that could explain the gap.
+all the subgroups perform much worse than the overall PR-AUC. The absolute worse group in terms if performance though, is the 80+ age group, where the PR-AUC is 0.0 or just slightly more than that. One data-driven reason this could be the case is that there might just not be many data points collected about people that are 80+, so the PR-AUC would be bad just because of a lack of information. One clinical reason might be that for the elderly, they often have other medical conditions or complications that might have similar symptoms to sepsis, so they will not be classified as having sepsis but may be flagged for other conditions. Older patients also might not have the general symptoms of sepsis that a model is trained on, where they may not have a high fever or low blood pressure. Symptoms will present differently in the elderly comapred to younger populations. 
 
 ### 7.2 Variable importance
 
-```{r variable-importance, fig.height = 5}
+```{r variable-importance, fig.height = 10}
 parsnip_fit <- extract_fit_parsnip(final_fit)
 
 importance_tbl <- if (grepl("^rf", best_id)) {
@@ -547,7 +662,7 @@ importance_tbl |>
 
 **Q16 (2 marks).** Compare the top 3 most important variables to the three predictors you identified in Q1.
 Do they match? Write one sentence about any variable that surprised you.
-
+The top three most important variables were: lactate, MAP (mean arterial pressure) and WBC (white blood cell/leukocyte count). My top three predictors were lactate, heart rate and respiration rate. Lactate was the same, however mean arterial pressure makes sense as it relates to both heart rate and respiration. The thing that I did not account for however was leukocyte count. However, thinking about it and after looking up what leukocytes were, it makes sense that this would be an important factor. Leukocytes are the immune system's primary defense against infection, so knowing the count of them in the body can help determine if there is sepsis or not. If there are large amounts of leukocytes found in the body, then it is actively fighting off an infection, so this data would be quite useful when training models. 
 ---
 
 ## 8 Discussion
@@ -557,6 +672,8 @@ Do they match? Write one sentence about any variable that surprised you.
 - What is the single biggest limitation of this analysis (consider the label definition, the static sampling approach, generalisability to other hospitals, etc.)?
 - Would you recommend deploying a model trained this way in a real ICU? If yes, under what monitoring conditions? If no, what would need to change first?
 
+A1: The static sampling approach seems to be the biggest limitation. Sepsis is an illness that develops over time, so even if a patient is positive for sepsis, the time that we take the data from might show that their vitals are stable and they do not have sepsis. Having the continuous data, even if it would be a lot to sift through, would make the model more accurate and able to track changes over time rather than at random intervals. 
+A2: I would not recommend this in an ICU setting. The main reason is because of the number of sepsis cases that it misses or misclassifies, which is more than the number of correctly classified sepsis cases. This would not be safe enough to use in such a life-or-death setting, it would need to be trained to be more sensitive. It also seems to not be great at certain demographics of people, where the PR-AUC of people ages 80+ was near 0, significantly different from the overall PR-AUC. This shows that the model might have some internal bias, potentially from the lack of data present. However, this would not do well in a hospital setting, espcially when the most in-risk groups are the ones that the models aren't great with.
 ---
 
 ## Session Info
